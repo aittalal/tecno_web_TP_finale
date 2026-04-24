@@ -9,7 +9,7 @@ Site web Flask d'actualité musicale avec gestion de concerts, réservations et 
 - **Formulaires** : Flask-WTF (validation CSRF)
 - **Authentification** : Flask-Login + Flask-Bcrypt
 - **CSS** : Bootstrap 5
-- **Météo** : OpenWeatherMap API (optionnel)
+- **Météo** : OpenWeatherMap API (j ai pas eu le temps pour  faire cette partie)
 
 ## Lancer avec GitHub Codespaces
 
@@ -45,8 +45,7 @@ source venv/bin/activate  # Windows : venv\Scripts\activate
 # Installer les dépendances
 pip install -r requirements.txt
 
-# Configurer l'environnement
-cp .env.example .env
+# Configurer l'environnement .env
 # Éditer .env avec vos paramètres (DATABASE_URL, SECRET_KEY, etc.)
 
 # Créer la base de données MariaDB
@@ -63,7 +62,6 @@ Au premier lancement, un compte admin est créé automatiquement :
 - **Email** : `admin@musiactu.fr`
 - **Mot de passe** : `admin1234`
 
-> ⚠️ Changez ce mot de passe en production !
 
 ## Structure MVC
 
