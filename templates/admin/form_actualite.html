@@ -1,0 +1,55 @@
+{% extends 'admin/base_admin.html' %}
+{% block admin_content %}
+
+<h1 class="h3 fw-bold mb-4">{{ title }}</h1>
+
+<div class="card border-0 shadow-sm">
+<div class="card-body">
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="row g-3">
+        <div class="col-12">
+            {{ form.titre.label(class="form-label fw-bold") }}
+            {{ form.titre(class="form-control" + (" is-invalid" if form.titre.errors else "")) }}
+            {% for e in form.titre.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="col-md-6">
+            {{ form.categorie_id.label(class="form-label fw-bold") }}
+            {{ form.categorie_id(class="form-select") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.date_evenement.label(class="form-label fw-bold") }}
+            {{ form.date_evenement(class="form-control") }}
+        </div>
+        <div class="col-12">
+            {{ form.resume.label(class="form-label fw-bold") }}
+            {{ form.resume(class="form-control", rows=2) }}
+        </div>
+        <div class="col-12">
+            {{ form.contenu.label(class="form-label fw-bold") }}
+            {{ form.contenu(class="form-control", rows=10) }}
+            {% for e in form.contenu.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="col-md-6">
+            {{ form.image.label(class="form-label fw-bold") }}
+            {{ form.image(class="form-control") }}
+            {% if actu and actu.image %}
+            <small class="text-muted">Image actuelle : {{ actu.image }}</small>
+            {% endif %}
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+            <div class="form-check">
+                {{ form.publiee(class="form-check-input") }}
+                {{ form.publiee.label(class="form-check-label fw-bold") }}
+            </div>
+        </div>
+        <div class="col-12 d-flex gap-2">
+            {{ form.submit(class="btn btn-musiactu") }}
+            <a href="{{ url_for('admin.actualites') }}" class="btn btn-outline-secondary">Annuler</a>
+        </div>
+    </div>
+</form>
+</div>
+</div>
+
+{% endblock %}

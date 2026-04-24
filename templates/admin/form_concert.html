@@ -1,0 +1,101 @@
+{% extends 'admin/base_admin.html' %}
+{% block admin_content %}
+
+<h1 class="h3 fw-bold mb-4">{{ title }}</h1>
+
+<div class="card border-0 shadow-sm">
+<div class="card-body">
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="row g-3">
+        <div class="col-md-8">
+            {{ form.titre.label(class="form-label fw-bold") }}
+            {{ form.titre(class="form-control" + (" is-invalid" if form.titre.errors else "")) }}
+            {% for e in form.titre.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="col-md-4">
+            {{ form.type_concert_id.label(class="form-label fw-bold") }}
+            {{ form.type_concert_id(class="form-select") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.artiste.label(class="form-label fw-bold") }}
+            {{ form.artiste(class="form-control") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.date_concert.label(class="form-label fw-bold") }}
+            {{ form.date_concert(class="form-control") }}
+        </div>
+        <div class="col-md-8">
+            {{ form.lieu.label(class="form-label fw-bold") }}
+            {{ form.lieu(class="form-control") }}
+        </div>
+        <div class="col-md-4">
+            {{ form.ville.label(class="form-label fw-bold") }}
+            {{ form.ville(class="form-control") }}
+        </div>
+        <div class="col-md-4">
+            {{ form.nb_places_total.label(class="form-label fw-bold") }}
+            {{ form.nb_places_total(class="form-control") }}
+        </div>
+        <div class="col-md-4">
+            {{ form.prix.label(class="form-label fw-bold") }}
+            {{ form.prix(class="form-control") }}
+        </div>
+        <div class="col-md-2">
+            {{ form.latitude.label(class="form-label fw-bold") }}
+            {{ form.latitude(class="form-control", placeholder="ex: 45.9") }}
+        </div>
+        <div class="col-md-2">
+            {{ form.longitude.label(class="form-label fw-bold") }}
+            {{ form.longitude(class="form-control", placeholder="ex: 6.1") }}
+        </div>
+        <div class="col-12">
+            {{ form.description.label(class="form-label fw-bold") }}
+            {{ form.description(class="form-control", rows=4) }}
+        </div>
+        <div class="col-12">
+            {{ form.avis_redacteur.label(class="form-label fw-bold") }}
+            {{ form.avis_redacteur(class="form-control", rows=3, placeholder="Visible uniquement après le concert") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.image_principale.label(class="form-label fw-bold") }}
+            {{ form.image_principale(class="form-control") }}
+            {% if concert is defined and concert and concert.image_principale %}
+            <small class="text-muted">Image actuelle : {{ concert.image_principale }}</small>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Photos supplémentaires (concerts passés) -->
+    {% if concert is defined and concert and concert.est_passe() %}
+    <hr class="my-4">
+    <h5 class="fw-bold">Ajouter des photos</h5>
+    <form method="POST" action="{{ url_for('admin.ajouter_photo', concert_id=concert.id) }}"
+          enctype="multipart/form-data" class="d-flex gap-2">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="file" name="photos" class="form-control" multiple accept="image/*">
+        <button type="submit" class="btn btn-outline-success btn-sm text-nowrap">
+            <i class="bi bi-upload"></i> Uploader
+        </button>
+    </form>
+    {% if concert.photos %}
+    <div class="row g-2 mt-2">
+        {% for photo in concert.photos %}
+        <div class="col-2">
+            <img src="{{ url_for('static', filename='img/uploads/' + photo.filename) }}"
+                 class="img-fluid rounded" style="height:80px;object-fit:cover;width:100%">
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <div class="d-flex gap-2 mt-4">
+        {{ form.submit(class="btn btn-musiactu") }}
+        <a href="{{ url_for('admin.concerts') }}" class="btn btn-outline-secondary">Annuler</a>
+    </div>
+</form>
+</div>
+</div>
+
+{% endblock %}

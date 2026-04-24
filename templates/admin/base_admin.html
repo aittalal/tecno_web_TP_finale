@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4">
+    <!-- Sidebar admin -->
+    <div class="col-lg-2">
+        <div class="list-group list-group-flush shadow-sm rounded">
+            <a href="{{ url_for('admin.dashboard') }}"
+               class="list-group-item list-group-item-action fw-bold {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="{{ url_for('admin.actualites') }}"
+               class="list-group-item list-group-item-action {% if 'actualite' in request.endpoint %}active{% endif %}">
+                <i class="bi bi-newspaper"></i> Actualités
+            </a>
+            <a href="{{ url_for('admin.categories') }}"
+               class="list-group-item list-group-item-action {% if 'categorie' in request.endpoint %}active{% endif %}">
+                <i class="bi bi-tags"></i> Catégories
+            </a>
+            <a href="{{ url_for('admin.concerts') }}"
+               class="list-group-item list-group-item-action {% if request.endpoint in ['admin.concerts','admin.ajouter_concert','admin.modifier_concert'] %}active{% endif %}">
+                <i class="bi bi-music-note-beamed"></i> Concerts
+            </a>
+            <a href="{{ url_for('admin.types_concerts') }}"
+               class="list-group-item list-group-item-action {% if 'type' in request.endpoint %}active{% endif %}">
+                <i class="bi bi-vinyl"></i> Types
+            </a>
+            <a href="{{ url_for('admin.commentaires') }}"
+               class="list-group-item list-group-item-action {% if 'commentaire' in request.endpoint %}active{% endif %}">
+                <i class="bi bi-chat"></i> Commentaires
+            </a>
+            <a href="{{ url_for('admin.utilisateurs') }}"
+               class="list-group-item list-group-item-action {% if 'utilisateur' in request.endpoint %}active{% endif %}">
+                <i class="bi bi-people"></i> Utilisateurs
+            </a>
+        </div>
+    </div>
+    <!-- Contenu admin -->
+    <div class="col-lg-10">
+        {% block admin_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

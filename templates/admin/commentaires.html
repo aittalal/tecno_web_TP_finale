@@ -1,0 +1,46 @@
+{% extends 'admin/base_admin.html' %}
+{% block admin_content %}
+
+<h1 class="h3 fw-bold mb-4"><i class="bi bi-chat"></i> Commentaires</h1>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr><th>#</th><th>Auteur</th><th>Commentaire</th><th>Cible</th><th>Date</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for comm in commentaires %}
+                <tr>
+                    <td>{{ comm.id }}</td>
+                    <td>{{ comm.nom_auteur }}</td>
+                    <td>{{ comm.contenu[:80] }}{% if comm.contenu|length > 80 %}…{% endif %}</td>
+                    <td>
+                        {% if comm.actualite %}
+                        <a href="{{ url_for('actualites.detail', actu_id=comm.actualite_id) }}" class="small">
+                            📰 {{ comm.actualite.titre[:30] }}
+                        </a>
+                        {% elif comm.concert %}
+                        <a href="{{ url_for('concerts.detail', concert_id=comm.concert_id) }}" class="small">
+                            🎵 {{ comm.concert.titre[:30] }}
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td><small>{{ comm.date_creation.strftime('%d/%m/%Y') }}</small></td>
+                    <td>
+                        <form method="POST" action="{{ url_for('admin.supprimer_commentaire', comm_id=comm.id) }}"
+                              class="d-inline" onsubmit="return confirm('Supprimer ?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted">Aucun commentaire.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

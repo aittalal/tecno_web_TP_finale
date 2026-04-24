@@ -1,45 +1,109 @@
-{% extends "base.html" %}
-{% block title %}Accueil — AstroSite{% endblock %}
-
+{% extends 'base.html' %}
 {% block content %}
-<div class="hero-banner">
-  <h1><i class="bi bi-stars"></i> Bienvenue sur AstroSite</h1>
-  <p>La communauté française passionnée d'astronomie et d'astrophotographie</p>
+
+<!-- Hero -->
+<div class="hero-section text-white rounded-3 p-5 mb-4 d-flex align-items-center" style="min-height:160px">
+    <div>
+        <h1 class="display-5 fw-bold mb-1">
+            <span style="color:#7cb342">MUSIAC</span>TU
+        </h1>
+        <p class="lead mb-0">L'actualité musicale de votre région — concerts, critiques, nouveautés</p>
+    </div>
 </div>
 
-<div class="container mt-5">
-  <div class="row g-4 justify-content-center">
-
-    <div class="col-md-4">
-      <div class="card h-100 text-center p-4">
-        <i class="bi bi-camera" style="font-size:3rem;color:#f0c060;"></i>
-        <h4 class="mt-3">Appareils Photo</h4>
-        <p class="text-secondary">Retrouvez notre sélection d'appareils pour l'astrophotographie,
-           du niveau amateur au professionnel.</p>
-        <a href="{{ url_for('appareils_photo') }}" class="btn btn-astro mt-auto">Voir les appareils</a>
-      </div>
+<div class="row g-4">
+    <!-- ── Actualités récentes ── -->
+    <div class="col-lg-7">
+        <h2 class="h4 fw-bold border-start border-4 border-success ps-3 mb-3">
+            Dernières actualités
+        </h2>
+        {% if actualites %}
+            {% for actu in actualites %}
+            <div class="card mb-3 shadow-sm border-0">
+                <div class="row g-0">
+                    {% if actu.image %}
+                    <div class="col-3">
+                        <img src="{{ url_for('static', filename='img/uploads/' + actu.image) }}"
+                             class="img-fluid rounded-start h-100" style="object-fit:cover" alt="">
+                    </div>
+                    <div class="col-9">
+                    {% else %}
+                    <div class="col-12">
+                    {% endif %}
+                        <div class="card-body py-2">
+                            {% if actu.categorie %}
+                            <span class="badge bg-{{ actu.categorie.couleur }} badge-cat mb-1">{{ actu.categorie.nom }}</span>
+                            {% endif %}
+                            {% if actu.date_evenement %}
+                            <small class="text-muted d-block">Le {{ actu.date_evenement.strftime('%d/%m/%Y') }}</small>
+                            {% endif %}
+                            <h5 class="card-title mb-1">
+                                <a href="{{ url_for('actualites.detail', actu_id=actu.id) }}" class="text-decoration-none text-dark">
+                                    {{ actu.titre }}
+                                </a>
+                            </h5>
+                            <p class="card-text text-muted small mb-0">
+                                {{ actu.resume or (actu.contenu[:120] + '…') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <a href="{{ url_for('actualites.liste') }}" class="btn btn-outline-success btn-sm">
+                Toutes les actualités →
+            </a>
+        {% else %}
+            <p class="text-muted">Aucune actualité pour l'instant.</p>
+        {% endif %}
     </div>
 
-    <div class="col-md-4">
-      <div class="card h-100 text-center p-4">
-        <i class="bi bi-images" style="font-size:3rem;color:#f0c060;"></i>
-        <h4 class="mt-3">Photographies</h4>
-        <p class="text-secondary">Admirez les plus belles photos du ciel capturées
-           par notre communauté.</p>
-        <a href="{{ url_for('photographies') }}" class="btn btn-astro mt-auto">Voir les photos</a>
-      </div>
+    <!-- ── Prochains concerts ── -->
+    <div class="col-lg-5">
+        <h2 class="h4 fw-bold border-start border-4 border-success ps-3 mb-3">
+            Concerts à venir
+        </h2>
+        {% if concerts %}
+            {% for concert in concerts %}
+            <div class="card mb-3 shadow-sm border-0">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-0 fw-bold">
+                                <a href="{{ url_for('concerts.detail', concert_id=concert.id) }}" class="text-decoration-none text-dark">
+                                    {{ concert.titre }}
+                                </a>
+                            </h6>
+                            <small class="text-muted">
+                                <i class="bi bi-person"></i> {{ concert.artiste }}
+                                &nbsp;|&nbsp;
+                                <i class="bi bi-geo-alt"></i> {{ concert.lieu }}, {{ concert.ville }}
+                            </small>
+                        </div>
+                        <span class="badge bg-dark text-nowrap ms-2" style="font-size:0.7rem">
+                            {{ concert.date_concert.strftime('%d/%m/%Y') }}
+                        </span>
+                    </div>
+                    <div class="mt-1">
+                        <small class="text-success fw-bold">
+                            {{ concert.places_disponibles() }} places dispo
+                        </small>
+                        {% if concert.prix > 0 %}
+                        <small class="text-muted"> — {{ '%.2f'|format(concert.prix) }} €</small>
+                        {% else %}
+                        <small class="text-muted"> — Gratuit</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <a href="{{ url_for('concerts.liste') }}" class="btn btn-outline-success btn-sm">
+                Tous les concerts →
+            </a>
+        {% else %}
+            <p class="text-muted">Aucun concert à venir.</p>
+        {% endif %}
     </div>
-
-    <div class="col-md-4">
-      <div class="card h-100 text-center p-4">
-        <i class="bi bi-telescope" style="font-size:3rem;color:#f0c060;"></i>
-        <h4 class="mt-3">Téléscopes</h4>
-        <p class="text-secondary">Découvrez notre guide des téléscopes pour chaque niveau
-           et chaque budget.</p>
-        <a href="{{ url_for('telescopes') }}" class="btn btn-astro mt-auto">Voir les téléscopes</a>
-      </div>
-    </div>
-
-  </div>
 </div>
+
 {% endblock %}

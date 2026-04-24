@@ -1,0 +1,55 @@
+{% extends 'admin/base_admin.html' %}
+{% block admin_content %}
+
+<h1 class="h3 fw-bold mb-4"><i class="bi bi-vinyl"></i> Types de concerts</h1>
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm">
+            <table class="table align-middle mb-0">
+                <thead class="table-dark">
+                    <tr><th>#</th><th>Nom</th><th>Slug</th><th></th></tr>
+                </thead>
+                <tbody>
+                    {% for t in types %}
+                    <tr>
+                        <td>{{ t.id }}</td>
+                        <td>{{ t.nom }}</td>
+                        <td><code>{{ t.slug }}</code></td>
+                        <td>
+                            <form method="POST" action="{{ url_for('admin.supprimer_type_concert', type_id=t.id) }}"
+                                  class="d-inline" onsubmit="return confirm('Supprimer ?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-center text-muted">Aucun type.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header fw-bold">Ajouter un type</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.ajouter_type_concert') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-2">
+                        <label class="form-label">Nom</label>
+                        <input type="text" name="nom" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Slug</label>
+                        <input type="text" name="slug" class="form-control form-control-sm" placeholder="ex: jazz" required>
+                    </div>
+                    <button type="submit" class="btn btn-musiactu btn-sm">Ajouter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

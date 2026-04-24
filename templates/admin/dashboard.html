@@ -1,0 +1,54 @@
+{% extends 'admin/base_admin.html' %}
+{% block admin_content %}
+
+<h1 class="h3 fw-bold mb-4"><i class="bi bi-speedometer2"></i> Tableau de bord</h1>
+
+<div class="row g-3 mb-5">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-1 fw-bold text-success">{{ stats.nb_concerts }}</div>
+            <div class="text-muted">Concerts</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-1 fw-bold text-primary">{{ stats.nb_actualites }}</div>
+            <div class="text-muted">Actualités</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-1 fw-bold text-warning">{{ stats.nb_users }}</div>
+            <div class="text-muted">Utilisateurs</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-1 fw-bold text-secondary">{{ stats.nb_commentaires }}</div>
+            <div class="text-muted">Commentaires</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="fw-bold">Actions rapides</h5>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin.ajouter_actualite') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Ajouter une actualité
+                    </a>
+                    <a href="{{ url_for('admin.ajouter_concert') }}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-plus-circle"></i> Ajouter un concert
+                    </a>
+                    <a href="{{ url_for('admin.categories') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-tags"></i> Gérer les catégories
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

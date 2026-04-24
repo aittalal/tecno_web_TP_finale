@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="h3 fw-bold mb-4">🎸 Concerts passés</h1>
+
+{% if concerts %}
+<div class="row g-3">
+    {% for concert in concerts %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 opacity-90">
+            {% if concert.image_principale %}
+            <img src="{{ url_for('static', filename='img/uploads/' + concert.image_principale) }}"
+                 class="card-img-top" alt="">
+            {% else %}
+            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height:180px">
+                <i class="bi bi-camera text-white" style="font-size:2rem"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <span class="badge bg-danger mb-2">Concert passé</span>
+                <h5 class="card-title fw-bold">{{ concert.titre }}</h5>
+                <p class="text-muted small">{{ concert.artiste }}</p>
+                <p class="small">
+                    <i class="bi bi-calendar3"></i> {{ concert.date_concert.strftime('%d/%m/%Y') }}
+                    &nbsp;|&nbsp;
+                    <i class="bi bi-geo-alt"></i> {{ concert.ville }}
+                </p>
+                {% if concert.photos %}
+                <p class="small text-muted"><i class="bi bi-images"></i> {{ concert.photos|length }} photo(s)</p>
+                {% endif %}
+                <a href="{{ url_for('concerts.detail', concert_id=concert.id) }}"
+                   class="btn btn-outline-secondary btn-sm">Voir le compte-rendu</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">Aucun concert passé enregistré.</div>
+{% endif %}
+{% endblock %}

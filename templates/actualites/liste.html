@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row g-4">
+    <!-- Sidebar catégories -->
+    <div class="col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header fw-bold bg-dark text-white">Catégories</div>
+            <div class="list-group list-group-flush">
+                <a href="{{ url_for('actualites.liste') }}"
+                   class="list-group-item list-group-item-action {% if not categorie_active %}active{% endif %}">
+                    Toutes les actualités
+                </a>
+                {% for cat in categories %}
+                <a href="{{ url_for('actualites.par_categorie', slug=cat.slug) }}"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center
+                          {% if categorie_active and categorie_active.id == cat.id %}active{% endif %}">
+                    {{ cat.nom }}
+                    <span class="badge bg-{{ cat.couleur }}">{{ cat.actualites|selectattr('publiee')|list|length }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste actualités -->
+    <div class="col-lg-9">
+        <h1 class="h3 fw-bold mb-1">
+            {% if categorie_active %}Actualités {{ categorie_active.nom }}
+            {% else %}Toutes les actualités{% endif %}
+        </h1>
+        <p class="text-muted mb-4">{{ actualites|length }} article(s)</p>
+
+        {% if actualites %}
+            {% for actu in actualites %}
+            <div class="card mb-3 shadow-sm border-0">
+                <div class="row g-0">
+                    {% if actu.image %}
+                    <div class="col-md-3">
+                        <img src="{{ url_for('static', filename='img/uploads/' + actu.image) }}"
+                             class="img-fluid rounded-start h-100" style="object-fit:cover;min-height:120px" alt="">
+                    </div>
+                    {% endif %}
+                    <div class="col{% if actu.image %}-md-9{% endif %}">
+                        <div class="card-body">
+                            <div class="d-flex gap-2 mb-1">
+                                {% if actu.categorie %}
+                                <span class="badge bg-{{ actu.categorie.couleur }}">{{ actu.categorie.nom }}</span>
+                                {% endif %}
+                                {% if actu.date_evenement %}
+                                <small class="text-muted">
+                                    Le {{ actu.date_evenement.strftime('%d/%m/%Y') }}
+                                </small>
+                                {% endif %}
+                            </div>
+                            <h5 class="card-title mb-1">
+                                <a href="{{ url_for('actualites.detail', actu_id=actu.id) }}"
+                                   class="text-decoration-none text-dark stretched-link">
+                                    {{ actu.titre }}
+                                </a>
+                            </h5>
+                            <p class="card-text text-muted small mb-0">
+                                {{ actu.resume or (actu.contenu[:150] + '…') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="alert alert-info">Aucune actualité dans cette catégorie.</div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

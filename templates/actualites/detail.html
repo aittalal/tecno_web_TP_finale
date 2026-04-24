@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+<div class="col-lg-8">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('actualites.liste') }}">Actualités</a></li>
+            {% if actualite.categorie %}
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('actualites.par_categorie', slug=actualite.categorie.slug) }}">
+                    {{ actualite.categorie.nom }}
+                </a>
+            </li>
+            {% endif %}
+            <li class="breadcrumb-item active">{{ actualite.titre[:40] }}…</li>
+        </ol>
+    </nav>
+
+    {% if actualite.image %}
+    <img src="{{ url_for('static', filename='img/uploads/' + actualite.image) }}"
+         class="img-fluid rounded mb-4 w-100" style="max-height:380px;object-fit:cover" alt="">
+    {% endif %}
+
+    <!-- En-tête -->
+    <div class="mb-3">
+        {% if actualite.categorie %}
+        <span class="badge bg-{{ actualite.categorie.couleur }} me-2">{{ actualite.categorie.nom }}</span>
+        {% endif %}
+        {% if actualite.date_evenement %}
+        <span class="text-muted small">Le {{ actualite.date_evenement.strftime('%d/%m/%Y') }}</span>
+        {% endif %}
+    </div>
+    <h1 class="fw-bold mb-1">{{ actualite.titre }}</h1>
+    <p class="text-muted small mb-4">Publié le {{ actualite.date_publication.strftime('%d/%m/%Y à %H:%M') }}</p>
+
+    {% if actualite.resume %}
+    <p class="lead border-start border-4 border-success ps-3 mb-4">{{ actualite.resume }}</p>
+    {% endif %}
+
+    <div class="article-content mb-5">
+        {{ actualite.contenu | safe }}
+    </div>
+
+    <!-- ─ Section Commentaires ─ -->
+    <div class="section-divider"></div>
+
+    <div class="mb-3">
+        <h5 class="fw-bold"><i class="bi bi-chat-dots"></i> Commentaires</h5>
+        <p class="text-muted">{{ commentaires|length }} Commentaire{% if commentaires|length != 1 %}s{% endif %}</p>
+    </div>
+
+    {% for comm in commentaires %}
+    <div class="d-flex gap-3 mb-3">
+        <div class="flex-shrink-0">
+            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold"
+                 style="width:40px;height:40px">
+                {{ comm.nom_auteur[0].upper() }}
+            </div>
+        </div>
+        <div>
+            <strong>{{ comm.nom_auteur }}</strong>
+            <small class="text-muted ms-2">{{ comm.date_creation.strftime('%d/%m/%Y') }}</small>
+            <p class="mb-0">{{ comm.contenu }}</p>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Formulaire commentaire -->
+    <div class="card border-0 shadow-sm mt-3">
+        <div class="card-header fw-bold bg-light">Poster un nouveau commentaire</div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('actualites.commenter', actu_id=actualite.id) }}">
+                {{ form.hidden_tag() }}
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        {{ form.nom_auteur(class="form-control form-control-sm", placeholder="Nom") }}
+                    </div>
+                    <div class="col-md-7">
+                        {{ form.contenu(class="form-control form-control-sm", placeholder="Mon commentaire", rows=1) }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ form.submit(class="btn btn-musiactu btn-sm w-100") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

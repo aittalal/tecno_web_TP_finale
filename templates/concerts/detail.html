@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row">
+<!-- ── Colonne principale ── -->
+<div class="col-lg-8">
+    {% if concert.image_principale %}
+    <img src="{{ url_for('static', filename='img/uploads/' + concert.image_principale) }}"
+         class="img-fluid rounded mb-3 w-100" style="max-height:340px;object-fit:cover" alt="">
+    {% endif %}
+
+    <div class="d-flex align-items-center gap-2 mb-2">
+        {% if concert.type_concert %}
+        <span class="badge bg-secondary">{{ concert.type_concert.nom }}</span>
+        {% endif %}
+        {% if concert.est_passe() %}
+        <span class="badge bg-danger">Concert passé</span>
+        {% else %}
+        <span class="badge bg-success">À venir</span>
+        {% endif %}
+    </div>
+
+    <h1 class="display-6 fw-bold">{{ concert.titre }}</h1>
+    <h4 class="text-muted mb-3">{{ concert.artiste }}</h4>
+
+    <ul class="list-unstyled mb-4">
+        <li class="mb-1"><i class="bi bi-calendar3 text-success"></i>
+            <strong>{{ concert.date_concert.strftime('%A %d %B %Y à %H:%M') }}</strong>
+        </li>
+        <li class="mb-1"><i class="bi bi-geo-alt text-success"></i>
+            {{ concert.lieu }}, {{ concert.ville }}
+        </li>
+        <li class="mb-1"><i class="bi bi-ticket-perforated text-success"></i>
+            {% if concert.prix > 0 %}{{ '%.2f'|format(concert.prix) }} € par place
+            {% else %}Entrée gratuite{% endif %}
+        </li>
+        {% if not concert.est_passe() %}
+        <li><i class="bi bi-people text-success"></i>
+            <span class="text-success fw-bold">{{ concert.places_disponibles() }}</span>
+            place(s) disponible(s) sur {{ concert.nb_places_total }}
+        </li>
+        {% endif %}
+    </ul>
+
+    {% if concert.description %}
+    <p class="lead">{{ concert.description }}</p>
+    {% endif %}
+
+    <!-- Météo prévue -->
+    {% if meteo %}
+    <div class="alert alert-info d-flex align-items-center gap-3 mb-4">
+        <img src="https://openweathermap.org/img/wn/{{ meteo.icone }}@2x.png" alt="" style="width:50px">
+        <div>
+            <strong>Météo prévue</strong> : {{ meteo.description }}, {{ meteo.temperature }}°C
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Avis rédacteur (concerts passés) -->
+    {% if concert.est_passe() and concert.avis_redacteur %}
+    <div class="card border-success mb-4">
+        <div class="card-header bg-success text-white fw-bold">
+            <i class="bi bi-star-fill"></i> Avis du rédacteur en chef
+        </div>
+        <div class="card-body fst-italic">{{ concert.avis_redacteur }}</div>
+    </div>
+    {% endif %}
+
+    <!-- Photos (concerts passés) -->
+    {% if concert.est_passe() and concert.photos %}
+    <h5 class="fw-bold mb-3"><i class="bi bi-images"></i> Photos du concert</h5>
+    <div class="row g-2 mb-4">
+        {% for photo in concert.photos %}
+        <div class="col-4">
+            <img src="{{ url_for('static', filename='img/uploads/' + photo.filename) }}"
+                 class="img-fluid rounded" style="height:150px;object-fit:cover;width:100%" alt="{{ photo.legende or '' }}">
+            {% if photo.legende %}<small class="text-muted">{{ photo.legende }}</small>{% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ─ Section Commentaires ─ -->
+    <div class="section-divider"></div>
+    <h5 class="fw-bold"><i class="bi bi-chat-dots"></i> Commentaires</h5>
+    <p class="text-muted">{{ commentaires|length }} Commentaire{% if commentaires|length != 1 %}s{% endif %}</p>
+
+    {% for comm in commentaires %}
+    <div class="d-flex gap-3 mb-3">
+        <div class="flex-shrink-0">
+            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white"
+                 style="width:40px;height:40px;font-weight:bold">
+                {{ comm.nom_auteur[0].upper() }}
+            </div>
+        </div>
+        <div>
+            <strong>{{ comm.nom_auteur }}</strong>
+            <small class="text-muted ms-2">{{ comm.date_creation.strftime('%d/%m/%Y') }}</small>
+            <p class="mb-0">{{ comm.contenu }}</p>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Formulaire commentaire -->
+    <div class="card border-0 shadow-sm mt-3">
+        <div class="card-header fw-bold bg-light">Poster un nouveau commentaire</div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('concerts.commenter', concert_id=concert.id) }}">
+                {{ form_commentaire.hidden_tag() }}
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        {{ form_commentaire.nom_auteur(class="form-control form-control-sm", placeholder="Nom") }}
+                    </div>
+                    <div class="col-md-7">
+                        {{ form_commentaire.contenu(class="form-control form-control-sm", placeholder="Mon commentaire", rows=1) }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ form_commentaire.submit(class="btn btn-musiactu btn-sm w-100") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ── Sidebar réservation ── -->
+<div class="col-lg-4">
+    {% if not concert.est_passe() %}
+    <div class="card shadow border-0 sticky-top" style="top:80px">
+        <div class="card-header bg-dark text-white fw-bold">
+            <i class="bi bi-ticket-fill"></i> Réservation
+        </div>
+        <div class="card-body">
+            {% if current_user.is_authenticated %}
+                {% set my_resa = current_user.reservations | selectattr('concert_id', 'eq', concert.id) | selectattr('annulee', 'eq', false) | list %}
+                {% if my_resa %}
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle"></i>
+                    Vous avez réservé <strong>{{ my_resa[0].nb_places }}</strong> place(s).
+                </div>
+                <form method="POST" action="{{ url_for('concerts.annuler_reservation', concert_id=concert.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-outline-danger btn-sm w-100">Annuler ma réservation</button>
+                </form>
+                {% else %}
+                    {% if concert.places_disponibles() > 0 %}
+                    <form method="POST" action="{{ url_for('concerts.reserver', concert_id=concert.id) }}">
+                        {{ form_reservation.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form_reservation.nb_places.label(class="form-label fw-bold") }}
+                            {{ form_reservation.nb_places(class="form-control", min=1, max=concert.places_disponibles()) }}
+                        </div>
+                        {{ form_reservation.submit(class="btn btn-musiactu w-100") }}
+                    </form>
+                    {% else %}
+                    <div class="alert alert-warning">Complet — plus de places disponibles.</div>
+                    {% endif %}
+                {% endif %}
+            {% else %}
+            <p class="text-muted small">Connectez-vous pour réserver vos places.</p>
+            <a href="{{ url_for('auth.connexion', next=request.url) }}" class="btn btn-outline-success w-100">
+                Se connecter
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+</div>
+
+{% endblock %}
