@@ -123,4 +123,3 @@ Au premier lancement, un compte admin est créé automatiquement :
 |---|---|---|
 | `SECRET_KEY` | Clé secrète Flask | `dev-secret-key` |
 | `DATABASE_URL` | URL MariaDB | `mysql+pymysql://root:root@localhost/musiactu` |
-| `OPENWEATHER_API_KEY` | Clé API météo (optionnel) | *(vide)* |
